@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JsoupWebCrawlService implements WebCrawlService {
 
-	private static final Logger log = LoggerFactory.getLogger(WebCrawlService.class);
+	private static final Logger log = LoggerFactory.getLogger(JsoupWebCrawlService.class);
 
 	private final JsoupService jsoupService;
 	
@@ -55,15 +55,15 @@ public class JsoupWebCrawlService implements WebCrawlService {
 		// Check if URL has been visited to avoid duplicate and the depth
 		if (!url.isEmpty() && !urlVisited.contains(url)
 				&& (currentDepth <= maxDepth)) {
-			log.debug("Depth [current:{}, max:{}]", currentDepth, maxDepth);
+			log.info("Depth [current:{}, max:{}]", currentDepth, maxDepth);
 			try {
 				urlVisited.add(url);
-				log.debug("New url to visit: " + url);
+				log.info("New url to visit: " + url);
 
 				// Fetch the page using jsoup and then extract links with "a[href]"
 				Document document = jsoupService.jsoupGet(url);
 
-				log.debug("Title is: " + document.title());
+				log.info("Title is: " + document.title());
 				Node currentNode = new Node(url, document.title());
 
 				Elements linksOnPage = document.select("a[href]");

@@ -21,8 +21,7 @@ public class MainController {
 	public List<Node> crawler(@RequestParam(value="url") String url, 
 			@RequestParam(value="depth", defaultValue=WebCrawlService.DEFAULT_DEPTH_AS_STRING) int depth){
 		
-		log.debug("URL is:" + url);
-		log.debug("Depth is:" + depth);
+		log.info("Depth is:" + depth);
 		return webCrawlService.crawl(url, depth);
 	}
 }
