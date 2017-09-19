@@ -1,6 +1,7 @@
 package com.qantas.webcrawler;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface WebCrawlService {
 	public static final String DEFAULT_DEPTH_AS_STRING = "1";
@@ -14,5 +15,5 @@ public interface WebCrawlService {
 	 * @param depth The maximum depth to crawl.
 	 * @return if successful, the node in hierarchy is returned.
 	 */
-	public List<Node> crawl(String url, int depth);
+	public CompletableFuture<List<Node>> crawl(String url, int depth);
 }

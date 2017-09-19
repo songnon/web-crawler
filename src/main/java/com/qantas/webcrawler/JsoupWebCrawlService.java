@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,6 +14,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +30,8 @@ public class JsoupWebCrawlService implements WebCrawlService {
 	}
 
 	@Override
-	public List<Node> crawl(String url, int depth) {
+	@Async
+	public CompletableFuture<List<Node>> crawl(String url, int depth) {
 		if (depth > MAX_DEPTH){
 			depth = MAX_DEPTH;
 		}
@@ -39,7 +42,7 @@ public class JsoupWebCrawlService implements WebCrawlService {
 		// shows that the final response is in an array.
 		Node node = getLinks(url, urlVisited, 0, depth);
 		List<Node> nodes = (node != null) ? Arrays.asList(node) : Collections.emptyList();
-		return nodes;
+		return CompletableFuture.completedFuture(nodes);
 	}
 
 	/**

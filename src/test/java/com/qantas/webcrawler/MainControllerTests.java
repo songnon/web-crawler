@@ -1,14 +1,18 @@
 package com.qantas.webcrawler;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.test.web.servlet.MvcResult;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(MainController.class)
@@ -33,9 +36,12 @@ public class MainControllerTests {
 	@Test
 	public void shouldReturnEmptyList() throws Exception {
 		String url = "http://www.google.com";
-		when(webCrawlService.crawl(url, WebCrawlService.DEFAULT_DEPTH)).thenReturn(Collections.emptyList());
+		when(webCrawlService.crawl(url, WebCrawlService.DEFAULT_DEPTH))
+			.thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
 		
-		mockMvc.perform(get("/crawler?url=" + url))
+		MvcResult result = mockMvc.perform(get("/crawler?url=" + url)).andReturn();
+		
+		mockMvc.perform(asyncDispatch(result))
 	           .andExpect(status().isOk())
 	           .andExpect(jsonPath("$", hasSize(0)));
 	}
@@ -48,9 +54,12 @@ public class MainControllerTests {
 		List<Node> nodeList = new ArrayList<Node>();
 		nodeList.add(node);
 		
-		when(webCrawlService.crawl(url, WebCrawlService.DEFAULT_DEPTH)).thenReturn(nodeList);
+		when(webCrawlService.crawl(url, WebCrawlService.DEFAULT_DEPTH))
+			.thenReturn(CompletableFuture.completedFuture(nodeList));
 		
-		mockMvc.perform(get("/crawler?url=" + url))
+		MvcResult result = mockMvc.perform(get("/crawler?url=" + url)).andReturn();
+		
+		mockMvc.perform(asyncDispatch(result))
 			   .andExpect(status().isOk())
 			   .andExpect(jsonPath("$", hasSize(1)))
 			   .andExpect(jsonPath("$[0].url", is(url)))

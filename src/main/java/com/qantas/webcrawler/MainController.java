@@ -1,6 +1,7 @@
 package com.qantas.webcrawler;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,12 @@ public class MainController {
 	private WebCrawlService webCrawlService;
 	
 	@RequestMapping("/crawler")
-	public List<Node> crawler(@RequestParam(value="url") String url, 
+	public CompletableFuture<List<Node>> crawler(@RequestParam(value="url") String url, 
 			@RequestParam(value="depth", defaultValue=WebCrawlService.DEFAULT_DEPTH_AS_STRING) int depth){
 		
 		log.info("Depth is:" + depth);
-		return webCrawlService.crawl(url, depth);
+		CompletableFuture<List<Node>> nodes = webCrawlService.crawl(url, depth);
+		log.info("crawl is returned!!!!");
+		return nodes;
 	}
 }
